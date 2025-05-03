@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #chat-container { margin-top: 20px; }
+    .message { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .user-message { background-color: #e0f7fa; }
+    .bot-reply { background-color: #f1f1f1; }
+  </style>
+</head>
+<body>
+
+  <h1>Chatbot con OpenRouter</h1>
+
+  <!-- Form per l'input dell'utente -->
+  <textarea id="userMessage" rows="4" cols="50" placeholder="Scrivi il tuo messaggio..."></textarea><br>
+  <button onclick="inviaMessaggio()">Invia</button>
+
+  <div id="chat-container"></div> <!-- Qui verranno mostrati i messaggi -->
+
+  <script>
+    async function inviaMessaggio() {
+      const userMessage = document.getElementById("userMessage").value;
+      if (!userMessage) return alert("Per favore, scrivi un messaggio!");
+
+      // Mostra il messaggio dell'utente nel frontend
+      mostraMessaggio(userMessage, 'user-message');
+
+      // Invia la richiesta al server
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage })
+      });
+
+      const data = await response.json();
+
+      // Mostra la risposta del bot nel frontend
+      mostraMessaggio(data.reply, 'bot-reply');
+    }
+
+    function mostraMessaggio(messaggio, classe) {
+      const chatContainer = document.getElementById("chat-container");
+      const div = document.createElement("div");
+      div.classList.add("message", classe);
+      div.textContent = messaggio;
+      chatContainer.appendChild(div);
+    }
+  </script>
+</body>
+</html>
